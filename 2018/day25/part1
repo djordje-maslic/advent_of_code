@@ -1,0 +1,41 @@
+int advent(String input) {
+  List<String> lS = input.split('\n');
+  List<String> trimList = lS.map((e) => e.trim()).toList();
+  List<List<int>> listP = trimList.map((e) =>
+      e.split(',').map((e) => int.parse(e)).toList()).toList();
+List<List<List<int>>> rezList=[[listP[0]]];
+  for (int ip = 1; ip < listP.length; ip++) {
+    List<int> sameConstListIndex=[];
+    for(int irl=0;irl<rezList.length;irl++){
+      for(int irlP=0;irlP<rezList[irl].length;irlP++){
+       if(checkM(listP[ip], rezList[irl][irlP])){
+         sameConstListIndex.add(irl);}
+       }
+      }
+   Set<int> indexSet= sameConstListIndex.toSet();
+    if(indexSet.isEmpty){rezList.add([listP[ip]]);}
+    else{
+      rezList[indexSet.first].add(listP[ip]);
+      List<List<List<int>>> newRezList=[[]];
+      for(int m=0;m< indexSet.length;m++){
+newRezList[0].addAll(rezList[indexSet.elementAt(m)]);
+
+      }
+      rezList.removeWhere((element) =>
+      indexSet.contains(rezList.indexOf(element)));
+      newRezList.addAll(rezList);
+      rezList=[];
+      rezList.addAll(newRezList);
+    }
+    }
+    return rezList.length;
+  }
+
+
+
+bool checkM(List<int>first,List<int>second){
+  if((first[0]-second[0]).abs()+(first[1]-second[1]).abs()+(first[2]-second[2]).abs()+(first[3]-second[3]).abs()<=3){
+    return true;
+  }
+  return false;
+}
