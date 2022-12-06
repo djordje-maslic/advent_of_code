@@ -19,3 +19,10 @@ int advent(String input) {
   return result;
 
 }
+
+bool check(List<String> list) {
+ Set s= list.toSet();
+  return s.length==list.length;
+
+}
+
