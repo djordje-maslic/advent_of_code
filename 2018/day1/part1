@@ -1,0 +1,12 @@
+int advent(String input) {
+  List<String> lS = input.split('\n');
+  List<String> trimList = lS.map((e) => e.trim()).toList();
+  List<int> listInt = trimList.map((e) =>
+       int.parse(e)).toList();
+  int rez=0;
+  for(int i=0;i<listInt.length;i++){
+    rez= rez+listInt[i];
+  }
+
+    return rez;
+  }
