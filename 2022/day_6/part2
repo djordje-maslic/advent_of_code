@@ -1,0 +1,21 @@
+
+int advent(String input) {
+  List<String> lS = input.split('');
+  List<String> trimList = lS.map((e) => e.trim()).toList();
+ int result=0;
+  List<String> stringList=[];
+
+  for (int i = 0; i <trimList.length; i++) {
+    stringList.add(trimList[i]);
+    if(stringList.length==14){
+      if(check(stringList)){
+        return i+1;
+      }else{
+        stringList.removeAt(0);
+      }
+
+    }
+  }
+  return result;
+
+}
