@@ -1,0 +1,62 @@
+
+int advent(String input) {
+  const String parent = 'parent';
+  const String size = 'size';
+
+  List<String> lS = input.split('\n');
+  List<String> trimList = lS.map((e) => e.trim()).toList();
+  int result = 0;
+  List<String> dirList = ['/'];
+  Map<String, Map<String, dynamic>> graph = {
+    '/': {parent: '', size: 0}
+  };
+  for (int i = 0; i < trimList.length; i++) {
+    if (trimList[i][0]=='\$') {
+      if (trimList[i].contains('\$ cd')) {
+        if (trimList[i].contains('\$ cd ..')) {
+          dirList.removeLast();
+        } else if (trimList[i].contains('\$ cd /')) {
+          dirList = ['/'];
+        } else {
+          String dirPath= dirList.toString()+trimList[i].split(' ')[2];
+
+          dirList.add(dirPath);
+
+        }
+      }
+    } else {
+      if (trimList[i].split(' ')[0] == 'dir') {
+        String dirPath= dirList.toString()+trimList[i].split(' ')[1];
+          graph[dirPath] = {size: 0, parent: dirList.last};
+
+      } else {
+        if (dirList.last != '/') {
+          graph = updateParent(
+              graph, dirList.last, int.parse(trimList[i].split(' ')[0]));
+        } else {
+          graph['/']![size] += int.parse(trimList[i].split(' ')[0]);
+        }
+      }
+    }
+  }
+  List<int> resList = graph.values.map((e) {
+    if (e[size] <= 100000) {
+      return e[size] as int;
+    } else {
+      return 0;
+    }
+  }).toList();
+  result = resList.reduce((value, element) => value + element);
+  return result;
+}
+
+Map<String, Map<String, dynamic>> updateParent(
+    Map<String, Map<String, dynamic>> graph, String parent, int size) {
+  if (parent != '/') {
+    graph[parent]!['size'] = graph[parent]!['size'] + size;
+    return updateParent(graph, graph[parent]!['parent'], size);
+  } else {
+    graph['/']!['size'] = size + graph['/']!['size'];
+    return graph;
+  }
+}
