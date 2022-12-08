@@ -1,0 +1,44 @@
+int advent(String input) {
+  List<String> lS = input.split('\n');
+  List<String> trimList = lS.map((e) => e.trim()).toList();
+
+  List<List<int>> resList = [];
+  List<List<List<String>>> checkList = [];
+
+  for (int i = 0; i < trimList.length; i++) {
+    Set<String> set = trimList[i].split('').toSet();
+    checkList.add([]);
+
+    for (int j = 0; j < set.length; j++) {
+      checkList[i].add([]);
+      for (int m = 0; m < trimList[i].length; m++) {
+        if (trimList[i].split('').toList()[m] == set.elementAt(j)) {
+          checkList[i][j].add(set.elementAt(j));
+        }
+      }
+    }
+  }
+
+  int threeTimes = 0;
+  int twoTimes = 0;
+  resList = checkList.map((s) {
+    return s.map((e) {
+      if (e.length == 2 || e.length == 3) {
+        return e.length;
+      } else {
+        return 1;
+      }
+    }).toList();
+  }).toList();
+  print(resList);
+  for (int i = 0; i < resList.length; i++) {
+    if (resList[i].contains(2)) {
+      twoTimes++;
+    }
+    if (resList[i].contains(3)) {
+      threeTimes++;
+    }
+  }
+  int res = twoTimes * threeTimes;
+  return res;
+}
