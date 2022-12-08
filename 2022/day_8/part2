@@ -1,0 +1,51 @@
+int advent(String input) {
+  List<String> lS = input.split('\n');
+  List<String> trimList = lS.map((e) => e.trim()).toList();
+  List<List<int>> bigRowList = trimList
+      .map((e) => e.split('').map((e) => int.parse(e)).toList())
+      .toList();
+  List<List<int>> bigColList = rowToColConv(bigRowList);
+  List<int> resList=[];
+ for(int i=0;i<bigRowList.length;i++){
+   for(int j=0;j<bigRowList[i].length;j++){
+     resList.add(treeViewCount(bigRowList[i], j)*treeViewCount(bigColList[j], i));
+   }
+ }
+ resList.sort();
+  return resList.last;
+}
+
+List<List<int>> rowToColConv(List<List<int>> list) {
+  List<List<int>> res = [];
+  for (int i = 0; i < list.length; i++) {
+    for (int j = 0; j < list[i].length; j++) {
+      if (res.length <= j) {
+        res.add([]);
+      }
+      res[j].add(list[i][j]);
+    }
+  }
+  return res;
+}
+
+int treeViewCount(List<int> list, int index) {
+  int first=0;
+  bool firstBloc=false;
+  for (int i = index-1; i >=0; i--) {
+   if(!firstBloc && index>0){ if (list[i] < list[index] && !firstBloc) {
+      first += 1;
+    }else{firstBloc=true;
+    first+=1;
+    }}
+  }
+  int second=0;
+  bool secondBloc=false;
+  for (int i = index+1; i <list.length; i++) {
+    if(!secondBloc && index<list.length-1){ if (list[i] < list[index] && !secondBloc) {
+      second += 1;
+    }else{secondBloc=true;
+    second+=1;
+    }}
+  }
+  return first*second;
+}
