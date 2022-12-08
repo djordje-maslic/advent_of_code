@@ -1,0 +1,47 @@
+
+int advent(String input) {
+  List<String> lS = input.split('\n');
+  List<String> trimList = lS.map((e) => e.trim()).toList();
+  int result = 0;
+  List<List<int>> bigRowList = trimList
+      .map((e) => e.split('').map((e) => int.parse(e)).toList())
+      .toList();
+  List<List<int>> bigColList = rowToColConv(bigRowList);
+ for(int i=0;i<bigRowList.length;i++){
+   for(int j=0;j<bigRowList[i].length;j++){
+     if(listCheck(bigRowList[i], j)||listCheck(bigColList[j],i))
+   {result+=1;}
+   }
+ }
+  return result;
+}
+
+
+List<List<int>> rowToColConv(List<List<int>> list) {
+  List<List<int>> res = [];
+  for (int i = 0; i < list.length; i++) {
+    for (int j = 0; j < list[i].length; j++) {
+      if (res.length <= j) {
+        res.add([]);
+      }
+      res[j].add(list[i][j]);
+    }
+  }
+  return res;
+}
+
+bool listCheck(List<int> list, int index) {
+  bool firstPart = true;
+  bool secondPart = true;
+  for (int i = 0; i < index; i++) {
+    if (list[i] >= list[index]) {
+      firstPart = false;
+    }
+  }
+  for (int i = list.length-1; i > index; i--) {
+    if (list[i] >= list[index]) {
+      secondPart=false;
+    }
+  }
+  return firstPart || secondPart;
+}
