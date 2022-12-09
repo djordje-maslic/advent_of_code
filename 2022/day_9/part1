@@ -1,0 +1,64 @@
+
+int advent(String input) {
+  List<String> lS = input.split('\n');
+  List<String> trimList = lS.map((e) => e.trim()).toList();
+  int res=0;
+  List<int> headP=[0,0];
+  List<int> headC=[0,0];
+  List<int> tail=[0,0];
+  List<List<int>> tailVisit=[[0,0]];
+  for(int i=0;i<lS.length;i++){
+    String list=lS[i];
+
+   String direction= list.split(' ')[0];
+   int moves= int.parse(list.split(' ').toList()[1]);
+   for(int j=0;j<moves;j++){
+     headP=headC;
+     headC=_headMover(headC, direction);
+     if(_headTailMD(tail, headC)>=2){
+       if(tail[0]!=headC[0] && tail[1]!=headC[1]){
+         if(_headTailMD(tail, headC)>2){
+           tail=headP;
+           _tailVisitAdd(tailVisit,tail);
+         }
+       }else if(tail[0]==headC[0] || tail[1]==headC[1]){
+
+         tail=headP;
+         _tailVisitAdd(tailVisit, tail);
+       }
+     }
+
+   }
+  }
+  return tailVisit.length;
+}
+
+List<List<int>> _tailVisitAdd(List<List<int>>tailVisit,List<int> tail){
+  bool check=false;
+  for(int i=0;i<tailVisit.length;i++){
+    if(tailVisit[i][0]==tail[0]&&tailVisit[i][1]==tail[1]){
+      check=true;
+    }
+  }
+  if(!check){
+    tailVisit.add(tail);}
+  return tailVisit;
+}
+
+List<int> _headMover(List<int> head, String direction){
+  if(direction=='R'){
+    return [head[0],head[1]-1];
+  }else if(direction=='L'){
+    return [head[0],head[1]+1];
+  }else if(direction=='U'){
+    return [head[0]-1,head[1]];
+  }else if(direction=='D'){
+    return [head[0]+1,head[1]];
+  }
+  return[];
+}
+
+int _headTailMD(List<int> first, List<int> second) {
+  return(first[0] - second[0]).abs() +
+      (first[1] - second[1]).abs();
+}
