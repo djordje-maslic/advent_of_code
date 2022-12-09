@@ -1,0 +1,98 @@
+int advent(String input) {
+  List<String> lS = input.split('\n');
+  List<String> trimList = lS.map((e) => e.trim()).toList();
+ 
+  List<int> headC=[0,0];
+  List<int> tail=[0,0];
+  List<int> tail1=[0,0];
+  List<int> tail2=[0,0];
+  List<int> tail3=[0,0];
+  List<int> tail4=[0,0];
+  List<int> tail5=[0,0];
+  List<int> tail6=[0,0];
+  List<int> tail7=[0,0];
+  List<int> tail8=[0,0];
+  List<List<int>> knotList= [tail1,tail2,tail3,tail4,tail5,tail6,tail7,tail8,tail];
+  List<List<int>> tailVisit=[[0,0]];
+  for(int i=0;i<lS.length;i++){
+    String list=lS[i];
+
+    String direction= list.split(' ')[0];
+    int moves= int.parse(list.split(' ').toList()[1]);
+    for(int j=0;j<moves;j++) {
+      headC = _headMover(headC, direction);
+      for (int m = 0; m < knotList.length; m++) {
+        if (m > 0) {
+          if (_headTailMD(knotList[m], knotList[m - 1]) >= 2) {
+            if (knotList[m][0] != knotList[m - 1][0] &&
+                knotList[m][1] != knotList[m - 1][1]) {
+              if (_headTailMD(knotList[m], knotList[m - 1]) > 2) {
+                knotList[m] = knotMover(knotList[m - 1], knotList[m]);
+              }
+            } else if (knotList[m][0] == knotList[m - 1][0] ||
+                knotList[m][1] == knotList[m - 1][1]) {
+              knotList[m] = knotMover(knotList[m - 1], knotList[m]);
+            }
+          }
+        }else{
+          if (_headTailMD(knotList[m], headC) >= 2) {
+            if (knotList[m][0] != headC[0] &&
+                knotList[m][1] != headC[1]) {
+              if (_headTailMD(knotList[m], headC) > 2) {
+                knotList[m] = knotMover(headC, knotList[m]);
+              }
+            } else if (knotList[m][0] == headC[0] ||
+                knotList[m][1] == headC[1]) {
+              knotList[m] = knotMover(headC, knotList[m]);
+            }
+          }
+        }
+        _tailVisitAdd(tailVisit, knotList.last);
+
+      }
+
+    }
+  }
+  return tailVisit.length;
+}
+
+List<int> knotMover(List<int> head,List<int>tail){
+  List<int> result=[0,0];
+  if(head[0]==tail[0]){result =[tail[0],result[1]];}
+ else if(head[0]>tail[0]){result =[tail[0]+1,result[1]];}
+ else if(head[0]<tail[0]){result=[tail[0]-1,result[1]];}
+  if(head[1]==tail[1]){result =[result[0],tail[1]];}
+ else if(head[1]>tail[1]){result =[result[0],tail[1]+1];}
+ else if(head[1]<tail[1]){result=[result[0],tail[1]-1];}
+  return result;
+}
+
+List<List<int>> _tailVisitAdd(List<List<int>>tailVisit,List<int> tail){
+  bool check=false;
+  for(int i=0;i<tailVisit.length;i++){
+    if(tailVisit[i][0]==tail[0]&&tailVisit[i][1]==tail[1]){
+      check=true;
+    }
+  }
+  if(!check){
+    tailVisit.add(tail);}
+  return tailVisit;
+}
+
+List<int> _headMover(List<int> head, String direction){
+  if(direction=='R'){
+    return [head[0],head[1]-1];
+  }else if(direction=='L'){
+    return [head[0],head[1]+1];
+  }else if(direction=='U'){
+    return [head[0]-1,head[1]];
+  }else if(direction=='D'){
+    return [head[0]+1,head[1]];
+  }
+  return[];
+}
+
+int _headTailMD(List<int> first, List<int> second) {
+  return(first[0] - second[0]).abs() +
+      (first[1] - second[1]).abs();
+}
