@@ -1,0 +1,41 @@
+
+int advent(String input) {
+  List<String> lS = input.split('\n');
+  List<String> trimList = lS.map((e) => e.trim()).toList();
+  int x = 1;
+  int cycles = 0;
+  List<int> signalStrengthList = [];
+  for (int i = 0; i < trimList.length; i++) {
+    if (cycles <= 220) {
+      if (trimList[i].contains('noop')) {
+        cycles = cycles + 1;
+        if (setSignalStr(x, cycles) != null) {
+          signalStrengthList.add(setSignalStr(x, cycles) ?? 0);
+        }
+      } else {
+        for (int j = 0; j < 2; j++) {
+          if (j == 0) {
+            cycles = cycles + 1;
+            if (setSignalStr(x, cycles) != null) {
+              signalStrengthList.add(setSignalStr(x, cycles) ?? 0);
+            }
+          } else {
+            cycles = cycles + 1;
+            if (setSignalStr(x, cycles) != null) {
+              signalStrengthList.add(setSignalStr(x, cycles) ?? 0);
+            }
+            x = x + int.parse(trimList[i].split(' ')[1]);
+          }
+        }
+      }
+    }
+  }
+  return signalStrengthList.reduce((value, element) => value + element);
+}
+
+int? setSignalStr(int x, int cycle) {
+  if ((cycle != 40 && (cycle - 20).remainder(40) == 0) || cycle == 20) {
+    return cycle * x;
+  }
+  return null;
+}
