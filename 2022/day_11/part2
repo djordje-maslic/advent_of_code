@@ -1,0 +1,93 @@
+
+Map<String, Map<String, dynamic>> stringToMap(String input) {
+  Map<String, Map<String, dynamic>> res = {};
+  int monkeyCount = 0;
+  List<String> rowList = input.split('\n').toList();
+  for (int j = 0; j < 8; j++) {
+    res['Monkey $j'] = {};
+  }
+  for (int i = 0; i < rowList.length; i++) {
+    if (rowList[i].contains('Monkey')) {
+      monkeyCount = int.parse(rowList[i].split(' ')[1].split('')[0]);
+    }
+    if (rowList[i].contains('Starting items')) {
+      List<int> listOfItems = rowList[i]
+          .split(':')
+          .toList()[1]
+          .split(',')
+          .toList()
+          .map((e) => int.parse(e))
+          .toList();
+      res['Monkey $monkeyCount']!['Starting items'] = listOfItems;
+    } else if (rowList[i].contains('Operation')) {
+      res['Monkey $monkeyCount']!['Operation'] = rowList[i].split(':')[1];
+    } else if (rowList[i].contains('Test:')) {
+      res['Monkey $monkeyCount']!['Test:'] =
+          int.parse(rowList[i].split(':')[1].split(' ').last);
+    } else if (rowList[i].contains('If true')) {
+      res['Monkey $monkeyCount']!['If true'] =
+          int.parse(rowList[i].split(':')[1].split(' ').last);
+    } else if (rowList[i].contains('If false')) {
+      res['Monkey $monkeyCount']!['If false'] =
+          int.parse(rowList[i].split(':')[1].split(' ').last);
+    }
+  }
+
+  return res;
+}
+
+int advent(String input) {
+  Map<String, Map<String, dynamic>> monkeyMap = stringToMap(input);
+  List<int> monkeyInspect = [0, 0, 0, 0, 0, 0, 0, 0];
+  for (int i = 0; i < 10000; i++) {
+    for (int j = 0; j < 8; j++) {
+      List<int> listItems = monkeyMap['Monkey $j']!['Starting items'] is int
+          ? [monkeyMap['Monkey $j']!['Starting items']]
+          : monkeyMap['Monkey $j']!['Starting items'] as List<int>;
+      monkeyInspect[j] = monkeyInspect[j] + listItems.length;
+      while (listItems.isNotEmpty) {
+        int item = operationRes(monkeyMap['Monkey $j']!['Operation'] as String,
+            listItems.first, monkeyMap['Monkey $j']!['Test:'] as int);
+        // item=(item/3).floor();
+
+        if (item.remainder(monkeyMap['Monkey $j']!['Test:'] as int) == 0) {
+          int throwToMonkeyTrue = monkeyMap['Monkey $j']!['If true'] as int;
+          List<int> itemListNew1 =
+              monkeyMap['Monkey $throwToMonkeyTrue']!['Starting items'] is int
+                  ? [monkeyMap['Monkey $throwToMonkeyTrue']!['Starting items']]
+                  : monkeyMap['Monkey $throwToMonkeyTrue']!['Starting items']
+                      as List<int>;
+          itemListNew1.add(item);
+          monkeyMap['Monkey $throwToMonkeyTrue']!['Starting items'] =
+              itemListNew1;
+        } else {
+          int throwToMonkey = monkeyMap['Monkey $j']!['If false'] as int;
+          List<int> itemListNew2 =
+              monkeyMap['Monkey $throwToMonkey']!['Starting items'] is int
+                  ? [monkeyMap['Monkey $throwToMonkey']!['Starting items']]
+                  : monkeyMap['Monkey $throwToMonkey']!['Starting items']
+                      as List<int>;
+          itemListNew2.add(item);
+          monkeyMap['Monkey $throwToMonkey']!['Starting items'] = itemListNew2;
+        }
+        listItems.removeAt(0);
+        monkeyMap['Monkey $j']!['Starting items'] = listItems;
+      }
+    }
+  }
+  
+  monkeyInspect.sort();
+  return monkeyInspect.last * monkeyInspect[monkeyInspect.length - 2];
+}
+
+int operationRes(String operation, int item, int dev) {
+  int x = int.tryParse(operation.trim().split(' ').last) ?? item;
+
+  if (operation.trim().split(' ')[3] == '+') {
+    item=item + x;
+  } else {
+    item=item * x;
+  }
+  item %= 9699690;
+  return item;
+}
