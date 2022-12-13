@@ -1,0 +1,169 @@
+
+List<String> alfa = [
+  'a',
+  'b',
+  'c',
+  'd',
+  'e',
+  'f',
+  'g',
+  'h',
+  'i',
+  'j',
+  'k',
+  'l',
+  'm',
+  'n',
+  'o',
+  'p',
+  'q',
+  'r',
+  's',
+  't',
+  'u',
+  'v',
+  'w',
+  'x',
+  'y',
+  'z',
+  'A',
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'G',
+  'H',
+  'I',
+  'J',
+  'K',
+  'L',
+  'M',
+  'N',
+  'O',
+  'P',
+  'Q',
+  'R',
+  'S',
+  'T',
+  'U',
+  'V',
+  'W',
+  'X',
+  'Y',
+  'Z'
+];
+String p = 'path';
+String v = 'visited';
+String e = 'elevation';
+String name = 'name';
+
+int advent2(String input2) {
+ List<int> res=[];
+  List<List<String>> rowList =
+      input2.split('\n').toList().map((e) => e.split('')).toList();
+  List<List<String>> colList = rowToColConv(rowList);
+  Map<String, Map<String, dynamic>> bigMap = mapFromList(rowList);
+
+  position(bigMap, [20,135]);
+
+for(int i=0;i<bigMap.length;i++){
+  if(bigMap.values.toList()[i][name]=='a'|| bigMap.values.toList()[i][name]=='S'){
+    res.add(bigMap.values.toList()[i][p]);
+  }
+}
+res.removeWhere((element) => element==0);
+res.sort();
+print(res);
+  return res.first;
+}
+
+int position(Map<String, Map<String, dynamic>> bigMap, List<int> location) {
+  int res=0;
+  List<List<String>> kyu = [
+    ['${location[0]},${location[1]}']
+  ];
+  bigMap['${location[0]},${location[1]}']![v] = true;
+  for (int i = 0; i < kyu.length; i++) {
+   if(kyu.last.isNotEmpty){ kyu.add([]);}
+    for (int m = 0; m < kyu[i].length; m++) {
+      List<String> reachableList = fourSidesCheckElevation(
+          bigMap, kyu[i][m].split(',').map((e) => int.parse(e)).toList());
+      for (int n = 0; n < reachableList.length; n++) {
+        if (!bigMap[reachableList[n]]![v]) {
+          if(bigMap[reachableList[n]]![name]=='E'){
+            bigMap[reachableList[n]]![p] = i + 1;
+
+            res=  bigMap[reachableList[n]]![p];
+          }
+          bigMap[reachableList[n]]![p] = i + 1;
+          bigMap[reachableList[n]]![v] = true;
+          kyu[i + 1].add(reachableList[n]);
+        }
+      }
+    }
+  }
+  return res;
+}
+
+Map<String, Map<String, dynamic>> mapFromList(List<List<String>> rowList) {
+  Map<String, Map<String, dynamic>> bigMap = {};
+  for (int i = 0; i < rowList.length; i++) {
+    for (int j = 0; j < rowList[i].length; j++) {
+      int elevation = 0;
+      if (rowList[i][j] == 'S') {
+        elevation = 0;
+      } else if (rowList[i][j] == 'E') {
+        elevation = 26;
+      } else {
+        elevation = alfa.indexOf(rowList[i][j]);
+      }
+      bigMap['$i,$j'] = {
+        e: elevation,
+        name: rowList[i][j],
+        v: false,
+        p: 0,
+      };
+    }
+  }
+  return bigMap;
+}
+
+List<String> fourSidesCheckElevation(
+    Map<String, Map<String, dynamic>> bigMap, List<int> location) {
+  List<String> res = [];
+  if (bigMap.keys.contains('${location[0]},${location[1] + 1}')) {
+    if (bigMap['${location[0]},${location[1] + 1}']![e] + 1 ==
+            bigMap['${location[0]},${location[1]}']![e] ||
+        bigMap['${location[0]},${location[1] + 1}']![e] >=
+            bigMap['${location[0]},${location[1]}']![e]) {
+      res.add('${location[0]},${location[1] + 1}');
+    }
+  }
+  if (bigMap.keys.contains('${location[0]},${location[1] - 1}')) {
+    if (bigMap['${location[0]},${location[1] - 1}']![e] + 1 ==
+            bigMap['${location[0]},${location[1]}']![e] ||
+        bigMap['${location[0]},${location[1] - 1}']![e] >=
+            bigMap['${location[0]},${location[1]}']![e]) {
+      res.add('${location[0]},${location[1] - 1}');
+    }
+  }
+  if (bigMap.keys.contains('${location[0] + 1},${location[1]}')) {
+    if (bigMap['${location[0] + 1},${location[1]}']![e] + 1 ==
+            bigMap['${location[0]},${location[1]}']![e] ||
+        bigMap['${location[0] + 1},${location[1]}']![e] >=
+            bigMap['${location[0]},${location[1]}']![e]) {
+      res.add('${location[0] + 1},${location[1]}');
+    }
+  }
+  if (bigMap.keys.contains('${location[0] - 1},${location[1]}')) {
+    if (bigMap['${location[0] - 1},${location[1]}']![e] + 1 ==
+            bigMap['${location[0]},${location[1]}']![e] ||
+        bigMap['${location[0] - 1},${location[1]}']![e] >=
+            bigMap['${location[0]},${location[1]}']![e]) {
+      res.add('${location[0] - 1},${location[1]}');
+    }
+  }
+
+  return res;
+}
