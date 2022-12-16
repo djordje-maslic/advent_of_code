@@ -1,0 +1,215 @@
+List mergeSort(List array) {
+
+    // Stop recursion if array contains only one element
+    if(array.length <= 1) {
+      return array;
+    }
+
+    // split in the middle of the array
+    int splitIndex = array.length ~/ 2;
+
+    // recursively call merge sort on left and right array
+    List leftArray = mergeSort(array.sublist(0, splitIndex));
+    List rightArray = mergeSort(array.sublist(splitIndex));
+
+    return merge(leftArray, rightArray);
+  }
+
+
+  List merge(leftArray, rightArray) {
+    List result = [];
+    int? i = 0;
+    int? j = 0;
+
+    // Search for the smallest element in left and right arrays
+    // array and insert it into result
+    // After the loop only one array has remaining elements
+    while(i! < leftArray.length && j! < rightArray.length) {
+      if(margeCompare([leftArray[i], rightArray[j]])) {
+        result.add(leftArray[i]);
+        i++;
+      } else {
+        result.add(rightArray[j]);
+        j++;
+      }
+    }
+
+    // Insert remaining elements of left array into result
+    // as long as there are remaining elements
+    while(i! < leftArray.length) {
+      result.add(leftArray[i]);
+      i++;
+    }
+
+    // Insert remaining elements of right array into result
+    // as long as there are remaining elements
+    while(j! < rightArray.length) {
+      result.add(rightArray[j]);
+      j++;
+    }
+
+    return result;
+  }
+
+
+
+bool margeCompare(List list) {
+
+  int i = 0;
+  if ((list[i] as List).isEmpty && (list[i + 1] as List).isNotEmpty) {
+    return true;
+  } else if ((list[i] as List).isNotEmpty && (list[i + 1] as List).isNotEmpty) {
+    int j = 0;
+    while (j < (list[i] as List).length && j < (list[i + 1] as List).length) {
+      if (listDrill(list[i][j], list[i + 1][j], list[i], list[i + 1]) == true) {
+        return true;
+      } else if (listDrill(list[i][j], list[i + 1][j], list[i], list[i + 1]) ==
+          false) {
+        break;
+      }
+      j++;
+      if (j == (list[i] as List).length && j < (list[i + 1] as List).length) {
+       return true;
+
+      } else if (j == (list[i + 1] as List).length &&
+          j < (list[i] as List).length) {
+        break;
+      } else if (j == (list[i + 1] as List).length &&
+          j == (list[i] as List).length) {
+        break;
+      }
+    }
+  }
+  return false;
+}
+
+int advent(String input) {
+  List list = bigStringToList(input);
+  list.add([[2]]);
+  list.add([[6]]);
+ List res= mergeSort(list);
+ int res1=0;
+ int res2=0;
+ for(int i=0;i<res.length;i++){
+   if(res[i].toString()=='[[2]]'){res1=i+1;}
+   if(res[i].toString()=='[[6]]'){res2=i+1;}
+ }
+
+  return res1*res2;
+}
+
+bool? listDrill(Object list1, Object list2, Object listBig1, Object listBig2) {
+  if (list1 is List && list2 is List) {
+    if (list1.isEmpty && list2.isNotEmpty) {
+      return true;
+    } else if (list1.isNotEmpty && list2.isEmpty) {
+      return false;
+    } else if (list1.isNotEmpty && list2.isNotEmpty) {
+      return whileBool(list1, list2);
+    } else if (list1.isEmpty && list2.isEmpty) {
+      return null;
+    }
+  } else if (list1 is List && list2 is int) {
+    return whileBool(list1, [list2]);
+  } else if (list1 is int && list2 is List) {
+    return whileBool([list1], list2);
+  } else {
+    if ((list1 as int) > (list2 as int)) {
+      return false;
+    } else if (list1 < list2) {
+      return true;
+    } else {
+      return null;
+    }
+  }
+  return null;
+}
+
+bool? whileBool(Object list1, Object list2) {
+  bool? check;
+  int i = 0;
+  if ((list1 as List).isEmpty && (list2 as List).isNotEmpty) {
+    return true;
+  } else if ((list1).isNotEmpty && (list2 as List).isEmpty) {
+    return false;
+  } else {
+    while ((i < (list1).length && i < (list2 as List).length)) {
+      check = listDrill(list1[i], list2[i], list1, list2);
+      if (check != null) {
+        return check;
+      }
+      i++;
+      if (i == (list1).length && i < (list2).length) {
+        return true;
+      } else if (i == (list2).length && i < (list1).length) {
+        return false;
+      }
+    }
+  }
+  return null;
+}
+
+List bigStringToList(String input) {
+  List<List> res = [];
+
+  List<String> rowString = input.split('\n');
+  for (int i = 0; i < rowString.length; i++) {
+    if (rowString[i] == '') {
+    } else {
+      res.add(stringToList(rowString[i]));
+    }
+  }
+  return res;
+}
+
+void listDeepAdd(int deep, List<Object> list) {
+  if (deep > 2) {
+    deep--;
+    listDeepAdd(deep, list.last as List<Object>);
+  } else {
+    list.add(<Object>[]);
+  }
+}
+
+void listDriller(List<Object> list, Object element, int deep) {
+  if (deep > 1) {
+    deep--;
+    listDriller(list.last as List<Object>, element, deep);
+  } else {
+    list.add(element);
+  }
+}
+
+List<Object> stringToList(String str) {
+  List<Object> res = [];
+  int deep = 0;
+  List<String> stList = str.split('');
+  for (int i = 0; i < stList.length; i++) {
+    if (stList[i] == '[') {
+      deep++;
+      if (i > 0) listDeepAdd(deep, res);
+    } else if (stList[i] == ']') {
+      deep--;
+    } else if (stList[i] == ',') {
+    } else if (int.tryParse(stList[i]) != null) {
+      if (nextElementCheck(stList, i)) {
+        listDriller(
+            res, int.tryParse('${stList[i]}${stList[i + 1]}') ?? 0, deep);
+        stList.removeAt(i + 1);
+      } else {
+        listDriller(res, int.tryParse(stList[i]) ?? 0, deep);
+      }
+    }
+  }
+  return res;
+}
+
+bool nextElementCheck(List<String> stList, int i) {
+  if (i + 1 == stList.length) {
+    return false;
+  } else if (int.tryParse(stList[i + 1]) != null) {
+    return true;
+  } else {
+    return false;
+  }
+}
