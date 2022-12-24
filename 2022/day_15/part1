@@ -1,0 +1,98 @@
+
+int advent(String input) {
+  List<List<int>> res = [];
+  List<List<List<int>>> listSB = stringToListCord(input);
+  int y = 2000000;
+  for (int i = 0; i < listSB.length; i++) {
+    int mdSB = md(listSB[i][0], listSB[i][1]);
+    int mdSRangeMax = listSB[i][0][1] + mdSB;
+    int mdSRangeMin = listSB[i][0][1] - mdSB;
+    if (y <= mdSRangeMax && y >= mdSRangeMin) {
+      if (listSB[i][0][1] <= y) {
+        int zeroP = mdSRangeMax - y;
+
+        int count = zeroP * 2;
+        int beginX = listSB[i][0][0] - zeroP;
+        int endX = listSB[i][0][0] - zeroP + count;
+        res.add([beginX, endX]);
+      } else {
+        int zeroP = y - mdSRangeMin;
+        int count = zeroP * 2;
+        int beginX = listSB[i][0][0] - zeroP;
+        int endX = listSB[i][0][0] - zeroP + count;
+        res.add([beginX, endX]);
+      }
+    }
+  }
+bubbleSort(res);
+int sm=res[0][0];
+for(int i=1;i<res.length;i++){
+
+  if(res[i][0]<sm){
+    sm=res[i][0];
+  }
+}
+  return res.last[1]-sm;
+}
+
+bubbleSort(List<List<int>> array) {
+  int lengthOfArray = array.length;
+  for (int i = 0; i < lengthOfArray - 1; i++) {
+    for (int j = 0; j < lengthOfArray - i - 1; j++) {
+      if (array[j][1] > array[j + 1][1]) {
+        // Swapping using temporary variable
+       List<int> temp = array[j];
+        array[j] = array[j + 1];
+        array[j + 1] = temp;
+      }
+    }
+  }
+  return (array);
+}
+
+bool checkCordList(List<List<int>> list, List<int> cord) {
+  for (int i = 0; i < list.length; i++) {
+    if (list[i][0] == cord[0] && list[i][1] == cord[1]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+int md(List<int> list, List<int> list1) {
+  int res = 0;
+  res = (list[0] - list1[0]).abs() + (list[1] - list1[1]).abs();
+  return res;
+}
+
+List<List<List<int>>> stringToListCord(String input) {
+  List<String> strList = input.split('\n').toList();
+  List<List<String>> strListSB =
+      strList.map((e) => e.split(': closest beacon is at ')).toList();
+  List<List<String>> strListXY = strListSB
+      .map((e) => e.map((e) {
+            if (e.contains('Sensor at ')) {
+              return e.substring(10);
+            } else {
+              return e;
+            }
+          }).toList())
+      .toList();
+  List<List<List<String>>> listStrLast =
+      strListXY.map((e) => e.map((e) => e.split(', y=')).toList()).toList();
+  List<List<List<int>>> listInt = listStrLast
+      .map((e) => e
+          .map((e) => e.map((e) {
+                if (e.contains('x=')) {
+                  return e.substring(2);
+                } else {
+                  return e;
+                }
+              }).toList())
+          .toList())
+      .toList()
+      .map((e) => e.map((e) => e.map((e) => int.parse(e)).toList()).toList())
+      .toList();
+
+  return listInt;
+}
