@@ -1,0 +1,98 @@
+
+int advent(String input) {
+  List<List<List<int>>> listSB = stringToListCord(input);
+  for (int y = 0; y <= 4000000; y++) {
+    List<List<int>> range = [];
+    for (int i = 0; i < listSB.length; i++) {
+      int mdSB = md(listSB[i][0], listSB[i][1]);
+      int sY = listSB[i][0][1];
+      int sX = listSB[i][0][0];
+      if (y >= sY - mdSB && y <= sY + mdSB) {
+        if (sY <= y) {
+          int mdW = mdSB - (y - sY);
+          int bRange = sX - mdW;
+          int eRange = sX + mdW;
+          range.add([bRange, eRange]);
+        } else if (sY >= y) {
+          int mdW = mdSB - (sY - y);
+          int bRange = sX - mdW;
+          int eRange = sX + mdW;
+          range.add([bRange, eRange]);
+        }
+      }
+    }
+    range = rangeCombiner(range);
+   if(range.length>1){
+     return (range.first[1]+1)*4000000+y;
+   }
+  }
+
+  return 1;
+}
+
+List<List<int>> rangeCombiner(List<List<int>> list) {
+  list = bubbleSort(list);
+  List<List<int>> newList = [list[0]];
+  for (int i = 1; i < list.length; i++) {
+    if ( newList.last[1]>=list[i][0]-1&&newList.last[1]<=list[i][1]) {
+      newList.last = [newList.last[0], list[i][1]];
+    }else if( newList.last[1]>=list[i][0]&&newList.last[1]>=list[i][1]){
+
+    } else {
+      newList.add(list[i]);
+    }
+  }
+  return newList;
+}
+
+List<List<int>> bubbleSort(List<List<int>> array) {
+  int lengthOfArray = array.length;
+  for (int i = 0; i < lengthOfArray - 1; i++) {
+    for (int j = 0; j < lengthOfArray - i - 1; j++) {
+      if (array[j][0] > array[j + 1][0]) {
+        // Swapping using temporary variable
+        List<int> temp = array[j];
+        array[j] = array[j + 1];
+        array[j + 1] = temp;
+      }
+    }
+  }
+  return (array);
+}
+int md(List<int> list, List<int> list1) {
+  int res = 0;
+  res = (list[0] - list1[0]).abs() + (list[1] - list1[1]).abs();
+  return res;
+}
+
+List<List<List<int>>> stringToListCord(String input) {
+  List<String> strList = input.split('\n').toList();
+  List<List<String>> strListSB =
+      strList.map((e) => e.split(': closest beacon is at ')).toList();
+  List<List<String>> strListXY = strListSB
+      .map((e) => e.map((e) {
+            if (e.contains('Sensor at ')) {
+              return e.substring(10);
+            } else {
+              return e;
+            }
+          }).toList())
+      .toList();
+  List<List<List<String>>> listStrLast =
+      strListXY.map((e) => e.map((e) => e.split(', y=')).toList()).toList();
+  List<List<List<int>>> listInt = listStrLast
+      .map((e) => e
+          .map((e) => e.map((e) {
+                if (e.contains('x=')) {
+                  return e.substring(2);
+                } else {
+                  return e;
+                }
+              }).toList())
+          .toList())
+      .toList()
+      .map((e) => e.map((e) => e.map((e) => int.parse(e)).toList()).toList())
+      .toList();
+
+  return listInt;
+}
